@@ -61,8 +61,5 @@ struct RecipeCard: View {
 }
 
 #Preview {
-	RecipeCard(recipe: Recipe(
-		name: "Pancakes",
-		summary: "Fluffy pancakes for 4 servings",
-		previewPhoto: UIImage(named: "SoufflePancakes")?.jpegData(compressionQuality: 0.8)))
+	RecipeCard(recipe: .sample)
 }

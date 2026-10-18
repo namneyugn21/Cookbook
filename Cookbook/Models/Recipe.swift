@@ -10,8 +10,8 @@ import SwiftData
 
 struct Ingredient: Codable, Hashable {
 	var name: String
-	var quantity: Double?
-	var unit: String
+	var quantity: Double = 0
+	var unit: String = ""
 }
 
 @Model

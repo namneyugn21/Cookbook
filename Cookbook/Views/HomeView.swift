@@ -14,7 +14,12 @@ struct HomeView: View {
 					ScrollView {
 						LazyVStack(spacing: 16) {
 							ForEach(recipes) { recipe in
-								RecipeCard(recipe: recipe)
+								NavigationLink {
+									RecipeDetailView(recipe: recipe)
+								} label: {
+									RecipeCard(recipe: recipe)
+								}
+								.buttonStyle(.plain)
 							}
 						}
 						.padding(.horizontal)
@@ -26,13 +31,7 @@ struct HomeView: View {
 			.toolbar {
 				ToolbarItem(placement: .primaryAction) {
 					Button {
-						let recipe = Recipe(
-							name: "Pancakes",
-							summary: "Who wants fluffy pancakes?",
-							previewPhoto: UIImage(named: "SoufflePancakes")?.jpegData(compressionQuality: 0.8)
-						)
-						
-						modelContext.insert(recipe)
+						modelContext.insert(Recipe.sample)
 					} label: {
 						Image(systemName: "plus")
 					}
