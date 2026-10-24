@@ -44,10 +44,8 @@ struct RecipeDetailView: View {
 					VStack(alignment: .leading, spacing: 8) {
 						Text(recipe.name)
 							.font(.largeTitle.bold())
-						if let description = recipe.summary {
-							Text(description)
-								.foregroundStyle(.secondary)
-						}
+						Text(recipe.summary)
+							.foregroundStyle(.secondary)
 					}
 					
 					// Ingredients

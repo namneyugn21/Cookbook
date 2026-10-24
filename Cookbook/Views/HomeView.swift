@@ -4,6 +4,8 @@ import SwiftData
 struct HomeView: View {
 	@Environment(\.modelContext) private var modelContext
 	@Query(sort: \Recipe.createdAt, order: .reverse) private var recipes: [Recipe]
+	
+	@State private var showingAdd = false
 
 	var body: some View {
 		NavigationStack {
@@ -28,10 +30,13 @@ struct HomeView: View {
 				}
 			}
 			.navigationTitle("Cookbook")
+			.sheet(isPresented: $showingAdd) {
+				AddRecipeView()
+			}
 			.toolbar {
 				ToolbarItem(placement: .primaryAction) {
 					Button {
-						modelContext.insert(Recipe.sample)
+						showingAdd = true
 					} label: {
 						Image(systemName: "plus")
 					}

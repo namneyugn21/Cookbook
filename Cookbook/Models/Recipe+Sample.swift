@@ -24,7 +24,7 @@ extension Recipe {
 				Ingredient(name: "large eggs", quantity: 2, unit: ""),
 				Ingredient(name: "unsalted butter, melted", quantity: 4, unit: "tbsp"),
 				Ingredient(name: "vanilla extract", quantity: 1, unit: "tsp"),
-				Ingredient(name: "butter, for the pan")
+				Ingredient(name: "butter, for the pan", quantity: 1, unit: "tbsp")
 			],
 			steps: [
 				"Whisk the flour, sugar, baking powder, baking soda, and salt in a large bowl.",

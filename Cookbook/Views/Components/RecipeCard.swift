@@ -42,10 +42,8 @@ struct RecipeCard: View {
 					.font(.headline)
 					.lineLimit(1)
 				
-				if let description = recipe.summary {
-					Text(description)
-						.font(.subheadline)
-				}
+				Text(recipe.summary)
+					.font(.subheadline)
 				
 				Text(recipe.createdAt, style: .date)
 					.font(.footnote)
