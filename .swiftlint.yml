@@ -1,0 +1,12 @@
+disabled_rules:
+  - trailing_whitespace
+  - todo
+  
+
+line_length:
+  warning: 140
+  error: 200
+
+excluded:
+  - Pods
+  - .build
