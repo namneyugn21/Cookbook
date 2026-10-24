@@ -29,12 +29,15 @@ struct AddRecipeView: View {
 	@State private var ingredients: [Ingredient] = []
 	@State private var steps: [DraftStep] = []
 	@State private var isPublic: Bool = false
-	// store the reference of the selected item in the photo library
-	@State private var selectedItem: PhotosPickerItem?
-	// actual bytes of the photo
-	@State private var photoData: Data?
-
 	
+	// states to store the photo actions
+	@State private var photoData: Data? // actual bytes of the photo
+	@State private var showSourceDialog = false
+	@State private var showLibrary = false
+	@State private var selectedItem: PhotosPickerItem? // store the reference of the selected item in the photo library
+	@State private var showCamera = false
+	@State private var capturedImage: UIImage?
+
 	/**
 	 The function will make sure the name, ingredients, and steps are not empty
 	 For ingredients, there need to be at least 1 ingredients with all fields filled
@@ -80,35 +83,33 @@ struct AddRecipeView: View {
 			Form {
 				// Preview photo
 				Section {
-					PhotosPicker(selection: $selectedItem, matching: .images) {
-						if let photoData, let uiImage = UIImage(data: photoData) {
-							Image(uiImage: uiImage)
-								.resizable()
-								.scaledToFill()
-								.frame(height: 180)
-								.frame(maxWidth: .infinity)
-								.clipShape(RoundedRectangle(cornerRadius: 16))
-						} else {
-							ZStack {
-								RoundedRectangle(cornerRadius: 16)
-									.fill(Color.accentColor.opacity(0.1))
-								VStack(spacing: 8) {
-									Image(systemName: "camera.fill")
-										.font(.title)
-									Text("Add photo")
-										.font(.subheadline)
+					Button {
+						showSourceDialog = true
+					} label: {
+						Color.clear
+							.aspectRatio(1, contentMode: .fit)
+							.overlay {
+								if let photoData, let uiImage = UIImage(data: photoData) {
+									Image(uiImage: uiImage)
+										.resizable()
+										.scaledToFill()
+								} else {
+									ZStack {
+										RoundedRectangle(cornerRadius: 16)
+											.fill(Color.accentColor.opacity(0.1))
+										VStack(spacing: 8) {
+											Image(systemName: "camera.fill")
+												.font(.title)
+											Text("Add photo")
+												.font(.subheadline)
+										}
+										.foregroundStyle(Color.accentColor)
+									}
 								}
-								.foregroundStyle(Color.accentColor)
 							}
-							.frame(height: 180)
-						}
+							.clipShape(RoundedRectangle(cornerRadius: 16))
 					}
 					.buttonStyle(.plain)
-					.onChange(of: selectedItem) { _, newItem in
-						Task {
-							photoData = try? await newItem?.loadTransferable(type: Data.self)
-						}
-					}
 				}
 				.listRowInsets(EdgeInsets())
 				.listRowBackground(Color.clear)
@@ -201,6 +202,40 @@ struct AddRecipeView: View {
 				}
 			}
 			.scrollDismissesKeyboard(.interactively)
+			.confirmationDialog("Recipe photo", isPresented: $showSourceDialog) {
+				// Check if the device have a camera
+				if UIImagePickerController.isSourceTypeAvailable(.camera) {
+					Button("Take Photo") { showCamera = true }
+				}
+				
+				// Option to select photo from library
+				Button("Choose from Library") { showLibrary = true }
+				
+				// Option to clear the current photo
+				if photoData != nil {
+					Button("Remove Photo", role: .destructive) {
+						photoData = nil
+						selectedItem = nil
+					}
+				}
+			}
+			.photosPicker(isPresented: $showLibrary, selection: $selectedItem, matching: .images)
+			.fullScreenCover(isPresented: $showCamera) {
+				CameraPicker(image: $capturedImage)
+					.ignoresSafeArea()
+			}
+			.onChange(of: selectedItem) { _, newItem in
+				Task {
+					guard let data = try? await newItem?.loadTransferable(type: Data.self),
+						  let image = UIImage(data: data) else { return }
+					photoData = image.squareJPEGData()
+				}
+			}
+			.onChange(of: capturedImage) { _, newImage in
+				guard let newImage else { return }
+				photoData = newImage.squareJPEGData()
+				capturedImage = nil
+			}
 			.navigationTitle("New Recipe")
 			.toolbar {
 				ToolbarItem(placement: .cancellationAction) {

@@ -14,30 +14,23 @@ struct RecipeDetailView: View {
 		ScrollView {
 			VStack(alignment: .leading, spacing: 24) {
 				// Photo (hero)
-				ZStack {
-					// chains two check for if the recipe has preview photo
-					// and then check if the bytes are an image using decoder
-					if let data = recipe.previewPhoto, let uiImage = UIImage(data: data) {
-						Image(uiImage: uiImage)
-							.resizable()
-							.scaledToFill()
-							.frame(maxWidth: .infinity)
-					} else {
-						UnevenRoundedRectangle(
-							topLeadingRadius: 12,
-							bottomLeadingRadius: 0,
-							bottomTrailingRadius: 0,
-							topTrailingRadius: 12
-						)
-						.fill(Color.gray.opacity(0.2))
-						
-						Image(systemName: "fork.knife")
-							.font(.largeTitle)
-							.foregroundStyle(.secondary)
+				Color.clear
+					.aspectRatio(1, contentMode: .fit)
+					.overlay {
+						if let data = recipe.previewPhoto, let uiImage = UIImage(data: data) {
+							Image(uiImage: uiImage)
+								.resizable()
+								.scaledToFill()
+						} else {
+							ZStack {
+								Color.gray.opacity(0.2)
+								Image(systemName: "fork.knife")
+									.font(.largeTitle)
+									.foregroundStyle(.secondary)
+							}
+						}
 					}
-				}
-				.frame(height: 280)
-				.clipped()
+					.clipped()
 				
 				VStack(alignment: .leading, spacing: 24) {
 					// Title and Summary
